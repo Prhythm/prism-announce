@@ -5,7 +5,11 @@
     "Bruce Tsai"
   ],
   "description": "Web component with material",
-  "main": "prism-announce.html",
+  "main": [
+    "prism-announce.html",
+    "prism-announce-toast.html",
+    "prism-announce-notification.html"
+  ],
   "dependencies": {
     "polymer": "Polymer/polymer#^2.0.0"
   },
