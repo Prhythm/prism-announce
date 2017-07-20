@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>prism-announce demo</title>
+
+    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+
+    <link rel="import" href="../../iron-demo-helpers/demo-pages-shared-styles.html" />
+    <link rel="import" href="../../iron-demo-helpers/demo-snippet.html" />
+    <link rel="import" href="../prism-announce.html" />
+    <link rel="import" href="../prism-announce-toast.html" />
+
+    <custom-style>
+        <style is="custom-style" include="demo-pages-shared-styles">
+
+        </style>
+    </custom-style>
+</head>
+
+<body>
+    <div class="vertical-section-container centered">
+        <h3>Prism-announce-toast demo</h3>
+        <demo-snippet>
+            <template>
+                <dom-bind>
+                    <template>
+                        <prism-announce id="announcer" top right>
+                            <template>
+                                <prism-announce-toast text="Hello [[name]] at [[postTime]]"></prism-announce-toast>
+                            </template>
+                        </prism-announce>
+
+                        <form>
+                            <p>
+                                Position:
+                                <select id="msg-pos" value="{{position::change}}">
+                                    <option value="top&left">TopLeft</option>
+                                    <option value="top&right" selected>TopRight</option>
+                                    <option value="bottom&left">BottomLeft</option>
+                                    <option value="bottom&right">BottomRight</option>
+                                    <option value="snack-bar">Snackbar</option>
+                                </select>
+                            </p>
+                            <p>
+                                Name: <input type="text" value="{{name::input}}" />
+                            </p>
+
+                            <p>
+                                <input type="button" value="Announce" on-click="addAnnounce" />
+                            </p>
+                        </form>
+                    </template>
+                </dom-bind>
+            </template>
+            <script>
+                'use strict';
+
+                let binder = document.querySelector('dom-bind');
+
+                binder.name = 'Bruce';
+
+                binder.$['msg-pos'].addEventListener('change', function (e) {
+                    let announcer = binder.$.announcer;
+                    console.log(this.value);
+                    let attributes = (this.value || '').split('&');
+
+                    announcer.removeAttribute('top');
+                    announcer.removeAttribute('left');
+                    announcer.removeAttribute('right');
+                    announcer.removeAttribute('bottom');
+                    announcer.removeAttribute('snack-bar');
+
+                    for (let i = 0; i < attributes.length; i++) {
+                        announcer.setAttribute(attributes[i], '');
+                    }
+                });
+
+                binder.addAnnounce = function (e) {
+                    // 顯示 announce
+                    this.dispatchEvent(new CustomEvent('announce', {
+                        bubbles: true,
+                        composed: true,
+                        detail: {
+                            name: this.name,
+                            postTime: new Date().toLocaleString()
+                        }
+                    }))
+                };
+
+                binder.closeMessage = function (e) {
+                    // 關閉動作
+                    e.srcElement.dispatchEvent(new CustomEvent('close', {
+                        bubbles: true,
+                        compose: true
+                    }))
+                };
+            </script>
+        </demo-snippet>
+    </div>
+</body>
+
+</html>

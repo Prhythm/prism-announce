@@ -1,0 +1,221 @@
+<link rel="import" href="../polymer/polymer.html" />
+
+<dom-module id="prism-announce">
+    <template>
+        <style>
+             :host {
+                position: fixed;
+                display: flex;
+                z-index: 10;
+                @apply(--var-prism-announce);
+            }
+
+             :host([hidden]) {
+                display: none;
+            }
+
+             :host([top]) {
+                top: 0px;
+                flex-direction: column-reverse;
+            }
+
+             :host([right]) {
+                right: 0px;
+            }
+
+             :host([left]) {
+                left: 0px;
+            }
+
+             :host([bottom]) {
+                bottom: 0px;
+                flex-direction: column;
+            }
+
+             :host([snack-bar]) {
+                top: initial !important;
+                bottom: 0px !important;
+                left: 0px !important;
+                right: 0px !important;
+                flex-direction: column !important;
+            }
+        </style>
+    </template>
+    <script>
+        'use strict';
+
+        /**
+         * `<prism-announc>` is a [Polymer 2](http://polymer-project.org/) element provides simple yet fully customisable notifications.
+         * 
+         * # Usage
+         * 
+         * Place `<prism-announce>` in your application, and customize content how message appears. Use `<prism-announce-toast>` and `<prism-announce-notification>` for toast and notification in material desgin.
+         * 
+         * ```html
+         * <prism-announce top right>
+         *     <template>
+         *         <style>
+         *             .notification {
+         *                 background-color: #cfcfcf;
+         *                 border: 1px solid grey;
+         *                 padding: 7px;
+         *                 margin: 5px;
+         *                 display: flex;
+         *                 justify-content: space-between;
+         *             }
+         *         </style>
+         *         <div class="notification">
+         *             <span>Hello [[name]] at [[postTime]]</span> &nbsp;
+         *             <button on-click="closeMessage">Close</button>
+         *         </div>
+         *     </template>
+         * </prism-announce>
+         * ```
+         *
+         * To announce a message, simply fire an `announce` event and assign content as a detail object. 
+         * 
+         * ```javascript
+         * element.dispatchEvent(new CustomEvent('announce', {
+         *     bubbles: true,
+         *     composed: true,
+         *     detail: {
+         *         name: this.name,
+         *         postTime: new Date().toLocaleString()
+         *     }
+         * }))
+         * ```
+         *
+         * ## Styling
+         *
+         * `<paper-button>` provides the following custom properties and mixins
+         * for styling:
+         * 
+         * Custom property | Description | Default
+         * ----------------|-------------|----------
+         * `--paper-button-ink-color` | Background color of the ripple | Based on the button's color
+         * `--paper-button` | Mixin applied to the button | `{}`
+         *
+         * @memberof Prhythm
+         * @customElement
+         * @polymer
+         * @demo demo/index.html
+         */
+        class PrismAnnounce extends Polymer.TemplateStamp(Polymer.Element) {
+
+            static get is() {
+                return 'prism-announce';
+            }
+
+            static get properties() {
+                return {
+                    /**
+                     * Visibility.
+                     */
+                    hidden: {
+                        type: Boolean,
+                        value: true,
+                        reflectToAttribute: true
+                    },
+
+                    /**
+                     * The element where announce event is bind to.
+                     *
+                     * @type {HtmlElement}
+                     */
+                    listener: {
+                        value: document,
+                        observer: '_listenerChanged'
+                    }
+                }
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+                // Bind announce event listener
+                this.set('attached', true);
+                this._listenerChanged(this.listener);
+            }
+
+            disconnectedCallback() {
+                this.set('attached', false);
+                // Unbind announce event listener
+                this._listenerChanged(this.listener);
+            }
+
+            /**
+             * Listen to event binder changes.
+             *
+             * @param {HtmlElement} n New element.
+             * @param {HtmlElement} o Old element.
+             * @return {Void}
+             */
+            _listenerChanged(n, o) {
+                // Register announce event listener when target is changed
+                if (this.get('attached')) {
+                    (o || document).removeEventListener('announce', this.announce.bind(this));
+                    (n || document).addEventListener('announce', this.announce.bind(this));
+                } else {
+                    (n || document).removeEventListener('announce', this.announce.bind(this));
+                }
+            }
+
+            /**
+             * Announces a new message block.
+             *
+             * @param {CustomEvent} e Custom event that with event name 'announce'.
+             * @return {Void}
+             */
+            announce(e) {
+                e.stopPropagation();
+
+                // Get  template class
+                // 同一個 template 僅能建立一次 template class
+                let TemplateClass = this.__template;
+                if (!TemplateClass) {
+                    // 取得 template
+                    let template = this.querySelector('template');
+                    if (!template) {
+                        console.warn(`[prism-announce] requires a <template> child`);
+                        return;
+                    }
+                    // initialize template class
+                    TemplateClass = this.__template = Polymer.Templatize.templatize(template, this, {
+                        instanceProps: e.detail || {}
+                    });
+                }
+
+                // Create message block container and message block
+                let container = document.createElement('div');
+                let instance = new TemplateClass(e.detail || {});
+                // Add close event listener
+                container.addEventListener('close', e => this.close(e, e.detail, container));
+                // Add message block to shadow root
+                container.appendChild(instance.root);
+                this.shadowRoot.appendChild(container);
+
+                // Let <prism-announce/> visible
+                this.hidden = false;
+            }
+
+            /**
+             * Close announced message block.
+             *
+             * @param {CustomEvent} e Custom event that with event name 'close'.
+             * @param {object} detail Message information.
+             * @param {HTMLDivElement} container A div element that contains message block.
+             * @return {Void}
+             */
+            close(e, detail, container) {
+                e.stopPropagation();
+
+                // Remove container from shadow root
+                this.shadowRoot.removeChild(container);
+
+                // Hide prism-announce when there is no message blocks
+                this.hidden = Array.prototype.filter.call(this.shadowRoot.children, (item) => item.tagName !== 'STYLE').length === 0;
+            }
+        }
+
+        customElements.define(PrismAnnounce.is, PrismAnnounce);
+    </script>
+</dom-module>

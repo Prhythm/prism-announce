@@ -1,0 +1,182 @@
+<link rel="import" href="../polymer/polymer.html" />
+
+<dom-module id="prism-announce-notification">
+    <template>
+        <style>
+             :host {
+                display: block;
+                background: #FFF;
+                min-width: 400px;
+                /* margin-bottom: 5px; */
+                margin-left: 2px;
+                margin-right: 2px;
+                padding: 12px 12px 0px 12px;
+                color: #212121;
+                border-radius: 2px;
+                box-shadow: 0 0 7px rgba(0, 0, 0, 0.24);
+            }
+
+             :host(.closing) {
+                -webkit-transition: opacity 0.3s;
+                transition: opacity 0.3s;
+                opacity: 0;
+            }
+
+            h4 span.close {
+                float: right;
+                height: 12px;
+                width: 12px;
+                margin: 3px;
+                position: relative;
+                cursor: pointer;
+            }
+
+            h4 span.close:before,
+            h4 span.close:after {
+                content: '';
+                background: #212121;
+                width: 2px;
+                height: 115%;
+                position: absolute;
+                left: 50%;
+                transform: rotate(-45deg);
+            }
+
+            h4 span.close:before {
+                transform: rotate(45deg);
+            }
+
+            p {
+                font: .85em/1.7em Roboto;
+                padding-bottom: 12px;
+            }
+        </style>
+        <h4>[[title]]<span class="close" title="Close" on-click="_close"></span></h4>
+        <p>[[text]]</p>
+    </template>
+    <script>
+        'use strict';
+
+        /**
+         * # \<prism-announce-notification>
+         *
+         * # Usage
+         * 
+         * ```html
+         * <prism-announce-notification title="[[title]]"
+         *                              text="Hello [[name]] at [[postTime]]">
+         * </prism-announce-notification>
+         * ```
+         *
+         * @memberof Prhythm
+         * @customElement
+         * @polymer
+         * @demo demo/prism-announce-notification-demo.html
+         */
+        class PrismAnnounceNotification extends Polymer.Element {
+
+            static get is() {
+                return 'prism-announce-notification';
+            }
+
+            static get properties() {
+                return {
+                    /**
+                     * Title
+                     */
+                    title: {
+                        type: String
+                    },
+
+                    /**
+                     * Message content.
+                     */
+                    text: {
+                        type: String
+                    },
+
+                    /**
+                     * Message display latency, in milliseconds.
+                     */
+                    latency: {
+                        type: Number,
+                        value: 5000
+                    }
+                }
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                // hold message when point on
+                this.addEventListener('mouseover', e => this._onMouseOver(e));
+                this.addEventListener('mouseout', e => this._onMouseOut(e));
+
+                // trigger closing
+                this.__postClose();
+            }
+
+            /**
+             * Register a timer for closing
+             *
+             * @return {Void}
+             */
+            __postClose() {
+                this.closingTask = Polymer.Async.timeOut.run(() => {
+                    this.__applyClose();
+                }, this.get('latency') || 5000);
+            }
+
+            /**
+             * Close this notification.
+             *
+             * @return {Void}
+             */
+            __applyClose() {
+                this.classList.add('closing');
+
+                // close after hidden
+                Polymer.Async.timeOut.run(() => {
+                    this.dispatchEvent(new CustomEvent('close', {
+                        bubbles: true,
+                        compose: true
+                    }));
+                }, 300);
+            }
+
+            /**
+             * Cancel close latency on mouse move over.
+             *
+             * @return {Void}
+             */
+            _onMouseOver() {
+                if (this.closingTask) {
+                    Polymer.Async.timeOut.cancel(this.closingTask);
+                    this.closingTask = null;
+                }
+            }
+
+            /**
+             * Reregister close latency on mouse move out.
+             *
+             * @return {Void}
+             */
+            _onMouseOut() {
+                this._onMouseOver();
+                this.__postClose();
+            }
+
+            /**
+             * Close notification.
+             * 
+             * @return {Void}
+             */
+            _close() {
+                this.__applyClose();
+            }
+
+        }
+
+        customElements.define(PrismAnnounceNotification.is, PrismAnnounceNotification);
+    </script>
+</dom-module>

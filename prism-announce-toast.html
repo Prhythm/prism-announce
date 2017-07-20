@@ -1,0 +1,88 @@
+<link rel="import" href="../polymer/polymer.html" />
+
+<dom-module id="prism-announce-toast">
+    <template>
+        <style>
+             :host {
+                display: block;
+                background-color: var(--paper-toast-background-color, #323232);
+                color: var(--paper-toast-color, #f1f1f1);
+                min-width: 288px;
+                padding: 16px 24px;
+                box-sizing: border-box;
+                box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+                margin-top: 2px;
+                font-size: 14px;
+                cursor: default;
+            }
+
+             :host(.closing) {
+                -webkit-transition: opacity 0.3s;
+                transition: opacity 0.3s;
+                opacity: 0;
+            }
+        </style>
+        <div>[[text]]</div>
+    </template>
+    <script>
+        'use strict';
+
+        /**
+         * # \<prism-announce-toast>
+         *
+         * # Usage
+         * 
+         * ```html
+         * <prism-announce-toast text="Hello [[name]] at [[postTime]]"></prism-announce-toast>
+         * ```
+         *
+         * @memberof Prhythm
+         * @customElement
+         * @polymer
+         * @demo demo/prism-announce-toast-demo.html
+         */
+        class PrismAnnounceToast extends Polymer.Element {
+
+            static get is() { return 'prism-announce-toast'; }
+
+            static get properties() {
+                return {
+                    /**
+                     * Message content.
+                     */
+                    text: {
+                        type: String
+                    },
+
+                    /**
+                     * Message display latency, in milliseconds.
+                     */
+                    latency: {
+                        type: Number,
+                        value: 5000
+                    }
+                }
+            }
+
+            connectedCallback() {
+                super.connectedCallback();
+
+                // trigger closing
+                Polymer.Async.timeOut.run(() => {
+                    this.classList.add('closing');
+
+                    // close after hidden
+                    Polymer.Async.timeOut.run(() => {
+                        this.dispatchEvent(new CustomEvent('close', {
+                            bubbles: true,
+                            compose: true
+                        }));
+                    }, 300);
+
+                }, this.get('latency') || 5000);
+            }
+        }
+
+        customElements.define(PrismAnnounceToast.is, PrismAnnounceToast);
+    </script>
+</dom-module>
