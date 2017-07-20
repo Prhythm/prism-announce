@@ -1,5 +1,9 @@
 {
   "name": "prism-announce",
+  "version": "2.0.0",
+  "authors": [
+    "Bruce Tsai"
+  ],
   "description": "Web component with material",
   "main": "prism-announce.html",
   "dependencies": {

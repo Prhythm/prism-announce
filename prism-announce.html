@@ -45,11 +45,11 @@
         'use strict';
 
         /**
-         * `<prism-announc>` is a [Polymer 2](http://polymer-project.org/) element provides simple yet fully customisable notifications.
+         * `<prism-announce>` is a [Polymer 2](http://polymer-project.org/) element provides simple yet fully customisable notifications.
          * 
          * # Usage
          * 
-         * Place `<prism-announce>` in your application, and customize content how message appears. Use `<prism-announce-toast>` and `<prism-announce-notification>` for toast and notification in material desgin.
+         * Place `<prism-announce>` in your application, and design how content message appears. Use `<prism-announce-toast>` and `<prism-announce-notification>` for toast and notification in material desgin.
          * 
          * ```html
          * <prism-announce top right>
@@ -87,18 +87,17 @@
          *
          * ## Styling
          *
-         * `<paper-button>` provides the following custom properties and mixins
-         * for styling:
+         * `<prism-announce>` provides the following custom properties and mixins for styling:
          * 
          * Custom property | Description | Default
          * ----------------|-------------|----------
-         * `--paper-button-ink-color` | Background color of the ripple | Based on the button's color
-         * `--paper-button` | Mixin applied to the button | `{}`
+         * `--var-prism-announce` | Mixin applied to the element | `{}`
          *
          * @memberof Prhythm
+         * @element prism-announce
          * @customElement
          * @polymer
-         * @demo demo/index.html
+         * @demo demo/index.html Custom template Demo
          */
         class PrismAnnounce extends Polymer.TemplateStamp(Polymer.Element) {
 

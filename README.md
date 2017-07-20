@@ -1,6 +1,6 @@
 # \<prism-announce\>
 
-`<prism-announc>` is a [Polymer 2](http://polymer-project.org/) element provides simple yet fully customisable notifications.
+`<prism-announce>` is a [Polymer 2](http://polymer-project.org/) element provides simple yet fully customisable notifications.
 
 # Usage
 
