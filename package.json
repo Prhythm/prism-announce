@@ -1,0 +1,22 @@
+{
+  "name": "prism-announce",
+  "version": "2.0.0",
+  "description": "Web component based on Polymer 2, notification with material design.",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://nanashi07@github.com/Prhythm/prism-announce.git"
+  },
+  "author": "Bruce Tsai",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Prhythm/prism-announce/issues"
+  },
+  "homepage": "https://github.com/Prhythm/prism-announce#readme"
+}
