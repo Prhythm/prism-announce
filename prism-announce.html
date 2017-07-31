@@ -174,15 +174,23 @@
                     // 取得 template
                     let template = this.querySelector('template');
                     if (!template) {
-                        console.warn(`[prism-announce] requires a <template> child`);
+                        console.warn(`[${PrismAnnounce.is}] requires a <template> child`);
                         return;
+                    }
+                    // initialize property setting
+                    let prop = Object.assign({}, e.detail);
+                    for (let name in prop) {
+                        if (prop.hasOwnProperty(name)) {
+                            prop[name] = (prop[name] || {}).constructor;
+                        }
                     }
                     // initialize template class
                     TemplateClass = this.__template = Polymer.Templatize.templatize(template, this, {
-                        instanceProps: e.detail || {}
+                        instanceProps: prop
                     });
                 }
 
+                console.debug(`[${PrismAnnounce.is}] announced ${JSON.stringify(e.detail)}`);
                 // Create message block container and message block
                 let container = document.createElement('div');
                 let instance = new TemplateClass(e.detail || {});

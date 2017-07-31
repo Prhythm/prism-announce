@@ -62,7 +62,6 @@
 
                 binder.$['msg-pos'].addEventListener('change', function (e) {
                     let announcer = binder.$.announcer;
-                    console.log(this.value);
                     let attributes = (this.value || '').split('&');
 
                     announcer.removeAttribute('top');
